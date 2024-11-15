@@ -1,0 +1,27 @@
+name: Build and Test SQL Server Container
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker Image
+        run: docker-compose build
+
+      - name: Run SQL Server Container
+        run: docker-compose up -d
+
+      - name: Verify SQL Server is Running
+        run: |
+          sleep 15
+          docker exec sqlserver-container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Password -Q "SELECT @@VERSION"
